@@ -1,4 +1,5 @@
 import cv2
+import os
 
 
 def resizeImage(img, desiredSize):
@@ -24,6 +25,32 @@ def resizeImageKeepRatio(img, desiredSize):
 
     color = [0, 0, 0]
 
-    newImg = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
-                                value=color)
+    newImg = cv2.copyMakeBorder(img, top, bottom, left, right,
+                                cv2.BORDER_CONSTANT, value=color)
     return newImg
+
+
+outputDir = "dataset"
+desiredSize = 150
+
+
+path = os.getcwd()
+directories = [d for d in os.listdir(path) if os.path.isdir(d)]
+
+# tworzenie folderów dla obrazów wyjściowych
+if not os.path.exists(outputDir):
+    os.makedirs(outputDir)
+    for directory in directories:
+        os.makedirs(f"{outputDir}/{directory}")
+
+i = 0
+
+for directory in directories:
+    for file in os.listdir(f"{path}/{directory}/"):
+        if file.endswith((".jpg", ".png")):
+            img = cv2.imread(f"{path}/{directory}/{file}", cv2.IMREAD_COLOR)
+            img = resizeImage(img, 100)
+            cv2.imwrite(f"{outputDir}/{directory}/{directory}_{i}.jpg",
+                        img, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            i += 1
+print("Koniec")
